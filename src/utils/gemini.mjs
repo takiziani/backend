@@ -15,15 +15,17 @@ async function run(gaol) {
         history: [
         ],
         generationConfig: {
-            maxOutputTokens: 3000,
+            maxOutputTokens: 500,
+            temperature: 0.1,
         },
     });
 
-    const msg = `give me a day by day week by week month by month  plan that make me able to achive this goal of "${gaol}" `;
+    const msg = `you are a planner ,give a plan to achive ${gaol}  ,the plan should be in the form of tasks,important :the output should be in a single line with this symbole $ to indicate the end of a task ,don't write titels and subtitels and dont write which day is the task just write the tasks in order and dont write anything else,write 10 tasks.`;
     const result = await chat.sendMessage(msg);
     const response = await result.response;
     const text = response.text();
     console.log(text);
-    return text;
+    const tasks = text.split("$");
+    return tasks;
 }
 export default run;

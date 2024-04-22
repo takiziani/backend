@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const taskSchema = new mongoose.Schema({
     task: {
-        required: true,
+        required: false,
         type: mongoose.Schema.Types.String,
     },
     status: {
@@ -21,7 +21,7 @@ const planSchema = new mongoose.Schema({
     },
     tasks: {
         required: false,
-        type: mongoose.Schema.Types.String,
+        type: [taskSchema],
     },
     goal: {
         required: true,
