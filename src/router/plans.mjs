@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { plan } from "../mongoose/schema/plan.mjs";
 import run from "../utils/gemini.mjs";
-import { get } from "mongoose";
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
@@ -12,6 +11,7 @@ function ensureAuthenticated(req, res, next) {
         res.status(401).json({ message: 'Unauthorized' });
     }
 }
+
 const router = Router();
 router.post("/api/plan", ensureAuthenticated, async (request, response) => {
     // The user is authenticated, so req.user should be defined
@@ -82,8 +82,11 @@ router.patch("/api/plan/:id/taskdone/:taskid/", ensureAuthenticated, async (requ
     const userId = request.user._id;
     const { status } = request.body;
     const plans = await plan.findOne({ _id: id, user: userId });
-    plans.tasks.id(taskid).status = true;;
+    const user = await user.findOne({ _id: userId })
+    plans.tasks.id(taskid).status = true;
+    user.progresse += 1;
     await plans.save();
+    await user.save();
     return response.status(200).send(plans);
 });
 // task undone
