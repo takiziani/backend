@@ -1,35 +1,5 @@
 import mongoose from "mongoose";
-const employeschema = new mongoose.Schema({
-    itis: {
-        type: mongoose.Schema.Types.Boolean,
-        required: true
-    },
-    employefullname: {
-        type: mongoose.Schema.Types.String,
-        required: true
-    }
-},
-)
-const companyschema = new mongoose.Schema({
-    itis: {
-        type: mongoose.Schema.Types.Boolean,
-        required: true
-    },
-    companyname: {
-        type: mongoose.Schema.Types.String,
-        required: true
-    }
-})
-const historyschema = new mongoose.Schema({
-    user: {
-        required: false,
-        type: mongoose.Schema.Types.String
-    },
-    model: {
-        required: false,
-        type: mongoose.Schema.Types.String
-    }
-})
+
 const userschema = new mongoose.Schema({
 
     username: {
@@ -49,10 +19,6 @@ const userschema = new mongoose.Schema({
         unique: true,
         lowercase: true,
     },
-    company: {
-        required: false,
-        type: companyschema,
-    },
     tasksdone: {
         required: false,
         type: mongoose.Schema.Types.Number,
@@ -60,12 +26,20 @@ const userschema = new mongoose.Schema({
     },
     employe: {
         required: false,
-        type: employeschema,
+        type: mongoose.Schema.Types.Boolean,
     },
-    history: {
+    company: {
         required: false,
-        type: [historyschema],
-    }
+        type: mongoose.Schema.Types.Boolean,
+    },
+    companyname: {
+        required: false,
+        type: mongoose.Schema.Types.String,
+    },
+    employefullname: {
+        required: false,
+        type: mongoose.Schema.Types.String,
+    },
 }
 );
 

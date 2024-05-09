@@ -18,19 +18,36 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
     const userId = request.user._id;
     const { body } = request;
     console.log(body);
-    const tasks = await run(body.goal);
+    let tasks;
+    let tasksobject;
+    while (true) {
+        try {
+            tasks = await run(body.goal, body.duration);
+            tasksobject = JSON.parse(tasks);
+            console.log(` this are the tasks${tasks}`);
+            break;
+        } catch (error) {
+            if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                console.error(error);
+                console.log("An error occurred. Retrying...");
+            } else {
+                throw error; // re-throw the error if it's not a JSON parsing error
+            }
+        }
+    }
     console.log(` this are the tasks${tasks}`);
     try {
         const newplan = new plan();
-        for (let i = 0; i < tasks.length; i++) {
-            console.log("inside the loop");
-            const task = {
-                task: tasks[i],
-                status: false,
-                date: new Date()
-            };
-            newplan.tasks.push(task);
-        }
+        // for (let i = 0; i < tasks.length; i++) {
+        //     console.log("inside the loop");
+        //     const task = {
+        //         task: tasks[i],
+        //         status: false,
+        //         date: new Date()
+        //     };
+        //     newplan.tasks.push(task);
+        // }
+        newplan.tasks = tasksobject.tasks;
         newplan.user = userId;
         newplan.goal = body.goal;
         const saveplan = await newplan.save();

@@ -11,7 +11,11 @@ const taskSchema = new mongoose.Schema({
     date: {
         required: true,
         type: mongoose.Schema.Types.String,
-    }
+    },
+    point: {
+        required: true,
+        type: mongoose.Schema.Types.Number,
+    },
 });
 const planSchema = new mongoose.Schema({
     user: {
