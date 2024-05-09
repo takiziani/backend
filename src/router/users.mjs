@@ -24,7 +24,9 @@ router.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 60000 * 60 * 24
+        maxAge: 60000 * 60 * 24,
+        sameSite: true,
+        secure: false//put true if you are using https
     }
 }));
 router.use(passport.initialize());
@@ -42,11 +44,13 @@ router.post("/api/userregister", cors(), async (request, response) => {
         return response.sendStatus(400);
     }
 });
-router.post("/api/userlogin", passport.authenticate("local"),
-    (request, response) => {
-        console.log(request.session);
-        response.send("you are logged in");
+router.post("/api/userlogin", passport.authenticate("local"), (request, response) => {
+    if (!request.user) return response.sendStatus(401);
+    response.send({
+        message: "You are logged in",
     });
+});
+
 router.post("/api/userlogout", (request, response) => {
     if (!request.user) return response.sendStatus(401);
     request.logout((err) => {

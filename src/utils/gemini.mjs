@@ -19,7 +19,7 @@ async function run(gaol, duration) {
         history: [
         ],
         generationConfig: {
-            maxOutputTokens: 20000,
+            maxOutputTokens: 10000,
             temperature: 0.9,
         },
     });
