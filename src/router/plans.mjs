@@ -24,7 +24,6 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
         try {
             tasks = await run(body.goal, body.duration);
             tasksobject = JSON.parse(tasks);
-            console.log(` this are the tasks${tasks}`);
             break;
         } catch (error) {
             if (error instanceof SyntaxError && error.message.includes("JSON")) {
@@ -35,18 +34,8 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
             }
         }
     }
-    console.log(` this are the tasks${tasks}`);
     try {
         const newplan = new plan();
-        // for (let i = 0; i < tasks.length; i++) {
-        //     console.log("inside the loop");
-        //     const task = {
-        //         task: tasks[i],
-        //         status: false,
-        //         date: new Date()
-        //     };
-        //     newplan.tasks.push(task);
-        // }
         newplan.tasks = tasksobject.tasks;
         newplan.user = userId;
         newplan.goal = body.goal;

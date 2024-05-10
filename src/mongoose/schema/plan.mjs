@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema({
     status: {
         required: true,
         type: mongoose.Schema.Types.Boolean,
+        default: false,
     },
     date: {
         required: true,

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, request, response } from "express";
 import { user } from "../mongoose/schema/user.mjs";
 import cors from "cors"
 import passport from "../strategies/localstrat.mjs";
@@ -7,6 +7,14 @@ import cookieParser from "cookie-parser";
 import { hashPassword } from "../utils/helper.mjs";
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
+        return next();
+    } else {
+        // If the user is not authenticated, send a 401 Unauthorized response
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+}
+function ensureCompany(req, res, next) {
+    if (req.user.company) {
         return next();
     } else {
         // If the user is not authenticated, send a 401 Unauthorized response
@@ -76,5 +84,9 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
     employeuser.employefullname = fullname;
     const saveuser = await employeuser.save();
     return response.send("you are an employe")
+});
+router.get("/api/usersranking", ensureAuthenticated, ensureCompany, async (request, response) => {
+    const users = await user.find({ employe: true });
+    return response.send(users);
 });
 export default router
