@@ -68,35 +68,39 @@ const userschema = new mongoose.Schema({
         required: false,
         type: mongoose.Schema.Types.String,
     },
-    dateofbirth: {
+    DateofBirth: {
         required: false,
         type: mongoose.Schema.Types.Date
     },
-    education: {
+    Education: {
         required: false,
         type: mongoose.Schema.Types.String
     },
-    workhistory: {
+    WorkHistory: {
         required: false,
         type: [mongoose.Schema.Types.String]
     },
-    organazation: {
+    Organization: {
         required: false,
         type: mongoose.Schema.Types.String
     },
-    language: {
+    Languages: {
         required: false,
         type: [mongoose.Schema.Types.String]
     },
-    failure: {
+    Failure: {
         required: false,
         type: mongoose.Schema.Types.Number,
         default: 0,
     },
-    sec: {
+    Sucess: {
         required: false,
         type: mongoose.Schema.Types.Number,
         default: 0,
+    },
+    Speciality: {
+        required: false,
+        type: mongoose.Schema.Types.String
     }
 }
 );
@@ -159,7 +163,7 @@ userschema.pre("save", async function (next) {
     next();
 });
 userschema.pre("save", async function (next) {
-    this.sec = await calculatesec(this.plans)
+    this.Sucess = await calculatesec(this.plans)
     next();
 })
 

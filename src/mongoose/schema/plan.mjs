@@ -42,7 +42,7 @@ const planSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Number,
         default: 0,
     },
-    sec: {
+    Sucess: {
         required: false,
         type: mongoose.Schema.Types.Boolean,
     },
@@ -81,7 +81,7 @@ planSchema.pre("save", async function (next) {
     next();
 });
 planSchema.pre("save", async function (next) {
-    this.sec = secsess(this.sec, this.tasks, this.progress);
+    this.Sucess = secsess(this.Sucess, this.tasks, this.progress);
     next();
 });
 export const plan = mongoose.model("plan", planSchema);

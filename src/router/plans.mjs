@@ -133,6 +133,9 @@ router.delete("/api/plan/:id/taskdelete/:taskid/", ensureAuthenticated, async (r
     const userId = request.user._id;
     const { status } = request.body;
     const plans = await plan.findOneAndDelete({ _id: id, user: userId });
+    const newuser = await user.findOne({ _id: userId })
+    newuser.Failure += 1;
+    await newuser.save();
     return response.status(200).send("itsdeleted");
 });
 // edit task
