@@ -39,7 +39,7 @@ const router = Router();
 router.use(cookieParser())
 
 router.use(session({
-    // secret: "tk14",
+    secret: "tk14",
     // resave: false,
     // saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.database }),
