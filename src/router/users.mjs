@@ -39,14 +39,14 @@ const router = Router();
 router.use(cookieParser())
 
 router.use(session({
-    secret: "tk14",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.database })
-    , cookie: {
+    // secret: "tk14",
+    // resave: false,
+    // saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.database }),
+    cookie: {
         maxAge: 60000 * 60 * 24,
-        sameSite: "none",
-        secure: false//put true if you are using https
+        sameSite: false,
+        secure: false
     }
 }));
 router.use(passport.initialize());
