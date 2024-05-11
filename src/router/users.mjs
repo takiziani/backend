@@ -2,8 +2,11 @@ import { Router, request, response } from "express";
 import { user } from "../mongoose/schema/user.mjs";
 import passport from "../strategies/localstrat.mjs";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import { hashPassword } from "../utils/helper.mjs";
+import dotenv from 'dotenv';
+dotenv.config();
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -39,7 +42,8 @@ router.use(session({
     secret: "tk14",
     resave: false,
     saveUninitialized: false,
-    cookie: {
+    store: MongoStore.create({ mongoUrl: process.env.database })
+    , cookie: {
         maxAge: 60000 * 60 * 24,
         sameSite: true,
         secure: false//put true if you are using https
