@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { plan } from "../mongoose/schema/plan.mjs";
+import { user } from "../mongoose/schema/user.mjs";
 import run from "../utils/gemini.mjs";
 
 // Middleware to check if the user is authenticated
@@ -36,10 +37,13 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
     }
     try {
         const newplan = new plan();
-        newplan.tasks = tasksobject.tasks;
+        newplan.tasks = tasksobject;
         newplan.user = userId;
         newplan.goal = body.goal;
         const saveplan = await newplan.save();
+        const updateduser = await user.findById(userId); // Assuming you have a User model
+        updateduser.plans.push(saveplan._id);
+        await updateduser.save();
         return response.status(201).send(saveplan);
     } catch (err) {
         console.log(err);
@@ -88,11 +92,10 @@ router.patch("/api/plan/:id/taskdone/:taskid/", ensureAuthenticated, async (requ
     const userId = request.user._id;
     const { status } = request.body;
     const plans = await plan.findOne({ _id: id, user: userId });
-    const user = await user.findOne({ _id: userId })
+    const newuser = await user.findOne({ _id: userId })
     plans.tasks.id(taskid).status = true;
-    user.progresse += 1;
     await plans.save();
-    await user.save();
+    await newuser.save();
     return response.status(200).send(plans);
 });
 // task undone

@@ -21,9 +21,18 @@ function ensureCompany(req, res, next) {
         res.status(401).json({ message: 'Unauthorized' });
     }
 }
+async function calculateUserRank(userId) {
+    // Retrieve all users and sort them by points in descending order
+    const users = await user.find({}).sort({ points: -1 }).exec();
+
+    // Find the index of the user in the sorted list
+    const userIndex = users.findIndex(u => u._id.toString() === userId);
+
+    // Return the user's rank (index in the sorted list + 1)
+    return userIndex + 1;
+}
 const router = Router();
 
-router.use(cors())
 
 router.use(cookieParser())
 
@@ -53,7 +62,7 @@ router.post("/api/userregister", cors(), async (request, response) => {
     }
 });
 router.post("/api/userlogin", passport.authenticate("local"), (request, response) => {
-    if (!request.user) return response.sendStatus(401);
+    if (!request.user) return response.send({ message: "You are not logged in" })
     response.send({
         message: "You are logged in",
     });
@@ -66,7 +75,7 @@ router.post("/api/userlogout", (request, response) => {
         response.send(200);
     });
 })
-router.patch("/api/user/itiscompany", ensureAuthenticated, async (request, response) => {
+/*router.patch("/api/user/itiscompany", ensureAuthenticated, async (request, response) => {
     const { body } = request;
     const userId = request.user._id;
     const cname = body.companyname;
@@ -74,7 +83,7 @@ router.patch("/api/user/itiscompany", ensureAuthenticated, async (request, respo
     companyuser.company = true;
     const saveuser = await companyuser.save();
     return response.send("you are a company")
-});
+});*/
 router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, response) => {
     const { body } = request;
     const userId = request.user._id;
@@ -85,8 +94,8 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
     const saveuser = await employeuser.save();
     return response.send("you are an employe")
 });
-router.get("/api/usersranking", ensureAuthenticated, ensureCompany, async (request, response) => {
-    const users = await user.find({ employe: true });
-    return response.send(users);
+router.get("/api/usersRank", ensureAuthenticated, ensureCompany, async (request, response) => {
+    const users = await user.find({}).sort({ points: -1 }).exec();
+    return response.send({ users });
 });
 export default router
