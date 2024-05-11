@@ -5,7 +5,7 @@ import run from "../utils/gemini.mjs";
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.user) {
         return next();
     } else {
         // If the user is not authenticated, send a 401 Unauthorized response

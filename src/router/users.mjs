@@ -1,4 +1,4 @@
-import { Router, request, response } from "express";
+import { Router, request, response, text } from "express";
 import { user } from "../mongoose/schema/user.mjs";
 import passport from "../strategies/localstrat.mjs";
 import session from "express-session";
@@ -41,12 +41,13 @@ router.use(cookieParser())
 router.use(session({
     secret: "tk14",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.database }),
     cookie: {
         maxAge: 60000 * 60 * 24,
-        sameSite: false,
-        secure: false
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true
     }
 }));
 router.use(passport.initialize());
