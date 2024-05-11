@@ -160,6 +160,7 @@ userschema.pre("save", async function (next) {
 });
 userschema.pre("save", async function (next) {
     this.sec = await calculatesec(this.plans)
+    next();
 })
 
 export const user = mongoose.model("user", userschema);
