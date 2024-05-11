@@ -67,7 +67,7 @@ router.post("/api/userregister", async (request, response) => {
 router.post("/api/userlogin", passport.authenticate("local"), async (request, response) => {
     if (!request.user) return response.send({ message: "You are not logged in" })
     const nuser = await user.findById(request.user._id).select('-password');
-    response.send({ requestuser: nuser });
+    response.send({ msg: "you are loged in", requestuser: nuser });
 });
 
 router.post("/api/userlogout", (request, response) => {
