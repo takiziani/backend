@@ -49,7 +49,7 @@ async function run(gaol, duration) {
     });
 
     //const msg = `you are a planner , today is ${year}-${month}-${day},give a plan to achive the gaol of "${gaol}" in this time frame :"${duration}" days,the plan should be in the form of tasks a task for every day of the time frame ,important :responde in a json format like this {"tasks:["task":"",date:"",point:""]},note that the date here is the due date of the task,the point are based on how hard the task is chose form 1 to a 100,the task number for the first task will be 1 for the scond it will be 2 until the last it will be ${duration}, it is very importante to responde in a json format`;
-    const msg = `give me a plan to achive the goal of ${gaol} in this time frame ${duration} days,the plan should be in the form of tasks with one task for every day of the time frame meening ${duration} tasks,it is important that the json fllow this format:{["task":"",date:"",point:""]},note that the date here is the due date of the task,the point are based on how hard the task is chose form 1 to a 100.it will be today is ${year}/${month}/${day}`
+    const msg = `give me a plan to achive the goal of ${gaol} in this time frame ${duration} ,the plan should be in the form of tasks with one task for every day of the time frame,it is important that the json fllow this format:{["task":"",date:"",point:""]},note that the date here is the due date of the task,the point are based on how hard the task is chose form 1 to a 100.it will be today is ${year}/${month}/${day}`
     while (true) {
         try {
             const result = await chat.sendMessage(msg);

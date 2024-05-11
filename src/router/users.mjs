@@ -1,6 +1,5 @@
 import { Router, request, response } from "express";
 import { user } from "../mongoose/schema/user.mjs";
-import cors from "cors"
 import passport from "../strategies/localstrat.mjs";
 import session from "express-session";
 import cookieParser from "cookie-parser";
@@ -48,7 +47,7 @@ router.use(session({
 }));
 router.use(passport.initialize());
 router.use(passport.session());
-router.post("/api/userregister", cors(), async (request, response) => {
+router.post("/api/userregister", async (request, response) => {
     const { body } = request;
     body.password = hashPassword(body.password);
     console.log(body);
@@ -61,20 +60,27 @@ router.post("/api/userregister", cors(), async (request, response) => {
         return response.sendStatus(400);
     }
 });
-router.post("/api/userlogin", passport.authenticate("local"), (request, response) => {
+router.post("/api/userlogin", passport.authenticate("local"), async (request, response) => {
     if (!request.user) return response.send({ message: "You are not logged in" })
-    response.send({
-        message: "You are logged in",
-    });
+    const nuser = await user.findById(request.user._id).select('-password');
+    response.send({ requestuser: nuser });
 });
 
 router.post("/api/userlogout", (request, response) => {
     if (!request.user) return response.sendStatus(401);
     request.logout((err) => {
         if (err) return response.sendStatus(400);
+        response.clearCookie('connect.sid'); // Delete the session cookie
         response.send(200);
     });
-})
+});
+// update user
+router.patch("/api/user", ensureAuthenticated, async (request, response) => {
+    const { body } = request;
+    const userId = request.user._id;
+    const updateuser = await user.findOneAndUpdate({ _id: userId }, body, { new: true });
+    return response.send(updateuser);
+});
 /*router.patch("/api/user/itiscompany", ensureAuthenticated, async (request, response) => {
     const { body } = request;
     const userId = request.user._id;
@@ -94,8 +100,13 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
     const saveuser = await employeuser.save();
     return response.send("you are an employe")
 });
-router.get("/api/usersRank", ensureAuthenticated, ensureCompany, async (request, response) => {
-    const users = await user.find({}).sort({ points: -1 }).exec();
-    return response.send({ users });
+router.get("/api/usersRank", ensureAuthenticated, async (request, response) => {
+    if (request.user.company) {
+        const users = await user.find({}).sort({ points: -1 }).select("-password").exec();
+        return response.send({ users });
+    } else {
+        const users = await user.find({}).sort({ points: -1 }).select("-password").select("-phonenumber").select("-email").exec();
+        return response.send({ users });
+    }
 });
 export default router
