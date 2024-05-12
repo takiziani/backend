@@ -2,10 +2,17 @@ import express from "express";
 import mongoose from "mongoose";
 import router from "./router/index.mjs";
 import cors from "cors";
+import allowedOrigins from "./router/allowedOrigins.mjs";
 const app = express();
 app.use(express.json());
 const corsOptions = {
-    origin: true,
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
     optionsSuccessStatus: 200,
     credentials: true
 }
