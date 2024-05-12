@@ -46,6 +46,8 @@ router.use(session({
     store: MongoStore.create({ mongoUrl: process.env.database }),
     cookie: {
         maxAge: 60000 * 60 * 24,
+        secure: true,
+        sameSite: "none"
     }
 }));
 router.use(passport.initialize());
