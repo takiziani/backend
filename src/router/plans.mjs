@@ -109,7 +109,6 @@ router.patch("/api/plan/redo/:id", ensureAuthenticated, async (request, response
 router.patch("/api/plan/:id/taskdone/:taskid/", ensureAuthenticated, async (request, response) => {
     const { id, taskid } = request.params;
     const userId = request.user._id;
-    const { status } = request.body;
     const plans = await plan.findOne({ _id: id, user: userId });
     const newuser = await user.findOne({ _id: userId })
     plans.tasks.id(taskid).status = true;
@@ -152,12 +151,12 @@ router.patch("/api/plan/:id/taskedit/:taskid/", ensureAuthenticated, async (requ
 router.patch("/api/plan/:id/taskadd/", ensureAuthenticated, async (request, response) => {
     const { id } = request.params;
     const userId = request.user._id;
-    const { task } = request.body;
+    const { task, date } = request.body;
     const plans = await plan.findOne({ _id: id, user: userId });
     const newtask = {
         task: task,
         status: false,
-        date: new Date()
+        date: date
     };
     plans.tasks.push(newtask);
     await plans.save();

@@ -37,7 +37,6 @@ const userschema = new mongoose.Schema({
     phonenumber: {
         required: false,
         type: mongoose.Schema.Types.String,
-        default: "000000000",
     },
     progresse: {
         required: false,
@@ -101,6 +100,11 @@ const userschema = new mongoose.Schema({
     Speciality: {
         required: false,
         type: mongoose.Schema.Types.String
+    },
+    totaltasks: {
+        required: false,
+        type: mongoose.Schema.Types.Number,
+        default: 0,
     }
 }
 );
@@ -128,7 +132,7 @@ async function calculatetotalprogress(plans) {
             console.log(`Plan with id ${plans[i]} not found`);
         }
     }
-    return progress;
+    return progress / plans.length;
 }
 async function calculateUserRank(userId) {
     // Retrieve all users and sort them by points in descending order
@@ -144,12 +148,35 @@ async function calculatesec(plans) {
     let sec = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan.sec = true) {
-            sec = sec + 1;
-        }
+        sec = newplan.progress * newplan.tasks.length;
     }
     return sec;
 }
+async function calculatefailure(plans) {
+    let failure = 0;
+    let today = new Date();
+    for (let i = 0; i < plans.length; i++) {
+        const newplan = await plan.findById(plans[i]);
+        for (let j = 0; j < newplan.tasks.length; j++) {
+            if (new Date(newplan.tasks[j].date) < today && newplan.tasks[j].status == false) {
+                failure += 1;
+            }
+        }
+    }
+    return failure;
+}
+async function calculate(plans) {
+    let totaltasks = 0;
+    for (let i = 0; i < plans.length; i++) {
+        const newplan = await plan.findById(plans[i]);
+        if (newplan) {
+            totaltasks += newplan.tasks.length;
+        } else {
+            console.log(`Plan with id ${plans[i]} not found`);
+        }
+    }
+    return totaltasks;
+};
 userschema.pre("save", async function (next) {
     this.points = await calculatetotalpoints(this.plans);
     next();
@@ -165,6 +192,13 @@ userschema.pre("save", async function (next) {
 userschema.pre("save", async function (next) {
     this.Sucess = await calculatesec(this.plans)
     next();
-})
-
+});
+userschema.pre("save", async function (next) {
+    this.totaltasks = await calculate(this.plans);
+    next();
+});
+userschema.pre("save", async function (next) {
+    this.Failure = await calculatefailure(this.plans);
+    next();
+});
 export const user = mongoose.model("user", userschema);

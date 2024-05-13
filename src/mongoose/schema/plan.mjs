@@ -42,10 +42,6 @@ const planSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Number,
         default: 0,
     },
-    Sucess: {
-        required: false,
-        type: mongoose.Schema.Types.Boolean,
-    },
 });
 function calculatetotalPoints(tasks) {
     let points = 0;
@@ -63,25 +59,14 @@ function calculateprogress(tasks) {
             progress += 1;
         }
     }
-    return progress;
+    return progress / tasks.length;
 };
-function secsess(sec, tasks, progress) {
-    if (tasks.length + 1 === progress) {
-        return sec = true;
-    } else {
-        return sec = false;
-    }
-}
 planSchema.pre("save", async function (next) {
     this.pointsearned = calculatetotalPoints(this.tasks);
     next();
 });
 planSchema.pre("save", async function (next) {
     this.progress = calculateprogress(this.tasks);
-    next();
-});
-planSchema.pre("save", async function (next) {
-    this.Sucess = secsess(this.Sucess, this.tasks, this.progress);
     next();
 });
 export const plan = mongoose.model("plan", planSchema);
