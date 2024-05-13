@@ -74,8 +74,8 @@ router.post("/api/userlogout", (request, response) => {
 router.patch("/api/user", ensureAuthenticated, async (request, response) => {
     const { body } = request;
     const userId = request.user._id;
-    const updateuser = await user.findOneAndUpdate({ _id: userId }, body, { new: true });
-    return response.send(updateuser.select("-password"));
+    const updateuser = await user.findOneAndUpdate({ _id: userId }, body, { new: true }).select("-password").exec();
+    return response.send(updateuser);
 });
 router.patch("/api/user/itiscompany", ensureAuthenticated, async (request, response) => {
     const { body } = request;
@@ -98,8 +98,9 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
 });
 router.get("/api/usersRank", ensureAuthenticated, async (request, response) => {
     if (request.user.company) {
+        console.log("company");
         const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("-password").exec();
-
+        return response.send({ users });
     } else {
         const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("-password").select("-phonenumber").select("-email").exec();
         return response.send({ users });
@@ -118,4 +119,39 @@ router.patch("/api/user/changepassword", ensureAuthenticated, async (request, re
     const saveuser = await newuser.save();
     return response.send("password changed");
 });
+router.delete("/api/user", ensureAuthenticated, async (request, response) => {
+    const userId = request.user._id;
+    const deleteuser = await user.findOneAndDelete({ _id: userId });
+});
+router.patch("/api/user/fav/:id", ensureAuthenticated, ensureCompany, async (request, response) => {
+    const userId = request.user._id;
+    const { id } = request.params;
+    const newuser = await user.findById(userId).select("-password");
+    newuser.companyfav.push(id);
+    const saveuser = await newuser.save();
+    return response.send(saveuser);
+});
+router.patch("/api/user/unfav/:id", ensureAuthenticated, ensureCompany, async (request, response) => {
+    const userId = request.user._id;
+    const { id } = request.params;
+    const newuser = await user.findById(userId).select("-password");
+    newuser.companyfav.pull(id);
+    const saveuser = await newuser.save();
+    return response.send(saveuser);
+});
+/*router.get("/api/user/fav", ensureAuthenticated, ensureCompany, async (request, response) => {
+    const userId = request.user._id;
+    const newuser = await user.findById(userId).select("-password");
+    console.log('niggga', newuser.companyfav);
+    const favs = [];
+    try {
+        for (let i = 0; i < newuser.companyfav.length; i++) {
+            favs[i] = await user.findById(newuser.companyfav[i]).select("-password");
+            console.log("inside the loop");
+        }
+        return response.send(favs);
+    } catch (err) {
+        console.log(err);
+    }
+});*/
 export default router

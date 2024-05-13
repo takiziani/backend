@@ -105,7 +105,11 @@ const userschema = new mongoose.Schema({
         required: false,
         type: mongoose.Schema.Types.Number,
         default: 0,
-    }
+    },
+    companyfav: {
+        required: false,
+        type: [mongoose.Schema.Types.ObjectId]
+    },
 }
 );
 async function calculatetotalpoints(plans) {
