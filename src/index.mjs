@@ -6,13 +6,7 @@ import allowedOrigins from "./router/allowedOrigins.mjs";
 const app = express();
 app.use(express.json());
 const corsOptions = {
-    origin: function (origin, callback) {
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
+    origin: true,
     optionsSuccessStatus: 200,
     credentials: true
 }

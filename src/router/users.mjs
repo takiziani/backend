@@ -46,8 +46,8 @@ router.use(session({
     store: MongoStore.create({ mongoUrl: process.env.database }),
     cookie: {
         maxAge: 60000 * 60 * 24,
-        secure: true,
-        sameSite: "none"
+        secure: process.env.NODE_ENV === 'production', // Secure in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // None in production, lax otherwise
     }
 }));
 router.use(passport.initialize());
@@ -108,10 +108,10 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
 });
 router.get("/api/usersRank", ensureAuthenticated, async (request, response) => {
     if (request.user.company) {
-        const users = await user.find({}).sort({ points: -1 }).select("-password").exec();
-        return response.send({ users });
+        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("-password").exec();
+
     } else {
-        const users = await user.find({}).sort({ points: -1 }).select("-password").select("-phonenumber").select("-email").exec();
+        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("-password").select("-phonenumber").select("-email").exec();
         return response.send({ users });
     }
 });
