@@ -63,7 +63,7 @@ function calculateprogress(tasks) {
         // mongoose.connection.close();
     }
 
-    return progress / tasks.length;
+    return Math.round((progress / tasks.length) * 100);
 };
 planSchema.pre("save", async function (next) {
     this.pointsearned = calculatetotalPoints(this.tasks);
