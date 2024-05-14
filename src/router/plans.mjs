@@ -12,7 +12,6 @@ function ensureAuthenticated(req, res, next) {
         res.status(401).json({ message: 'Unauthorized' });
     }
 }
-
 const router = Router();
 router.post("/api/plan", ensureAuthenticated, async (request, response) => {
     // The user is authenticated, so req.user should be defined
@@ -41,7 +40,7 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
         newplan.user = userId;
         newplan.goal = body.goal;
         const saveplan = await newplan.save();
-        const updateduser = await user.findById(userId); // Assuming you have a User model
+        const updateduser = await user.findById(userId);
         updateduser.plans.push(saveplan._id);
         await updateduser.save();
         return response.status(201).send(saveplan);

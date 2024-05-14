@@ -108,7 +108,8 @@ const userschema = new mongoose.Schema({
     },
     companyfav: {
         required: false,
-        type: [mongoose.Schema.Types.ObjectId]
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "user",
     },
 }
 );
@@ -153,7 +154,9 @@ async function calculatesec(plans) {
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
         sec = newplan.progress * newplan.tasks.length;
+        mongoose.connection.close();
     }
+
     return sec;
 }
 async function calculatefailure(plans) {
@@ -166,7 +169,9 @@ async function calculatefailure(plans) {
                 failure += 1;
             }
         }
+        mongoose.connection.close();
     }
+
     return failure;
 }
 async function calculate(plans) {
@@ -178,7 +183,9 @@ async function calculate(plans) {
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
+        mongoose.connection.close();
     }
+
     return totaltasks;
 };
 userschema.pre("save", async function (next) {

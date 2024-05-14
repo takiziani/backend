@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import router from "./router/index.mjs";
 import cors from "cors";
-import allowedOrigins from "./router/allowedOrigins.mjs";
 const app = express();
 app.use(express.json());
 const corsOptions = {
@@ -25,6 +24,7 @@ mongoose.connect(process.env.database)
     .then(() => console.log("connected to database"))
     .catch((err) => console.log(`EROR:${err}`));
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const sever = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+sever.setMaxListeners(20);

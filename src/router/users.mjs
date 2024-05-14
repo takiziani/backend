@@ -139,19 +139,10 @@ router.patch("/api/user/unfav/:id", ensureAuthenticated, ensureCompany, async (r
     const saveuser = await newuser.save();
     return response.send(saveuser);
 });
-/*router.get("/api/user/fav", ensureAuthenticated, ensureCompany, async (request, response) => {
+router.get("/api/usercompany/favorites", ensureAuthenticated, ensureCompany, async (request, response) => {
     const userId = request.user._id;
     const newuser = await user.findById(userId).select("-password");
-    console.log('niggga', newuser.companyfav);
-    const favs = [];
-    try {
-        for (let i = 0; i < newuser.companyfav.length; i++) {
-            favs[i] = await user.findById(newuser.companyfav[i]).select("-password");
-            console.log("inside the loop");
-        }
-        return response.send(favs);
-    } catch (err) {
-        console.log(err);
-    }
-});*/
+    const favs = await user.find({ _id: { $in: newuser.companyfav } }).select("-password").exec();
+    return response.send(favs);
+});
 export default router
