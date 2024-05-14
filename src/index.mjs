@@ -20,11 +20,11 @@ function originChecker(req, res, next) {
 app.use(originChecker);
 app.use(cors(corsOptions));
 app.use(router);
+app.set("trust proxy", 1);
 mongoose.connect(process.env.database)
     .then(() => console.log("connected to database"))
     .catch((err) => console.log(`EROR:${err}`));
 const PORT = process.env.PORT || 3000;
-const sever = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-sever.setMaxListeners(20);
