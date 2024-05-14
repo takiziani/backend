@@ -49,7 +49,7 @@ function calculatetotalPoints(tasks) {
         if (tasks[i].status === true) {
             points += tasks[i].point;
         }
-        mongoose.connection.close();
+        // mongoose.connection.close();
     }
 
     return points;
@@ -60,7 +60,7 @@ function calculateprogress(tasks) {
         if (tasks[i].status === true) {
             progress += 1;
         }
-        mongoose.connection.close();
+        // mongoose.connection.close();
     }
 
     return progress / tasks.length;

@@ -25,6 +25,7 @@ const userschema = new mongoose.Schema({
     company: {
         required: false,
         type: mongoose.Schema.Types.Boolean,
+        default: false,
     },
     companyname: {
         required: false,
@@ -137,11 +138,11 @@ async function calculatetotalprogress(plans) {
             console.log(`Plan with id ${plans[i]} not found`);
         }
     }
-    return progress / plans.length;
+    return Math.round((progress / plans.length) * 100);
 }
 async function calculateUserRank(userId) {
-    // Retrieve all users and sort them by points in descending order
-    const users = await user.find({}).sort({ points: -1 }).exec();
+    // Retrieve all users with company set to false and sort them by points in descending order
+    const users = await user.find({ company: false }).sort({ points: -1 }).exec();
 
     // Find the index of the user in the sorted list
     const userIndex = users.findIndex(u => u._id.toString() === userId);
@@ -153,8 +154,12 @@ async function calculatesec(plans) {
     let sec = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        sec = newplan.progress * newplan.tasks.length;
-        mongoose.connection.close();
+        if (newplan) {
+            sec = newplan.progress * newplan.tasks.length;
+        } else {
+            console.log(`Plan with id ${plans[i]} not found`);
+        }
+        // mongoose.connection.close();
     }
 
     return sec;
@@ -164,12 +169,16 @@ async function calculatefailure(plans) {
     let today = new Date();
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        for (let j = 0; j < newplan.tasks.length; j++) {
-            if (new Date(newplan.tasks[j].date) < today && newplan.tasks[j].status == false) {
-                failure += 1;
+        if (newplan) {
+            for (let j = 0; j < newplan.tasks.length; j++) {
+                if (new Date(newplan.tasks[j].date) < today && newplan.tasks[j].status == false) {
+                    failure += 1;
+                }
             }
+        } else {
+            console.log(`Plan with id ${plans[i]} not found`);
         }
-        mongoose.connection.close();
+        // mongoose.connection.close();
     }
 
     return failure;
@@ -183,7 +192,7 @@ async function calculate(plans) {
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
-        mongoose.connection.close();
+        // mongoose.connection.close();
     }
 
     return totaltasks;

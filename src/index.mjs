@@ -24,6 +24,7 @@ app.set("trust proxy", 1);
 mongoose.connect(process.env.database)
     .then(() => console.log("connected to database"))
     .catch((err) => console.log(`EROR:${err}`));
+mongoose.connection.setMaxListeners(20); // Increase limit to 20
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
