@@ -6,6 +6,7 @@ import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import { hashPassword } from "../utils/helper.mjs";
 import dotenv from 'dotenv';
+import { comparePassword } from "../utils/helper.mjs";
 dotenv.config();
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -115,7 +116,8 @@ router.patch("/api/user/changepassword", ensureAuthenticated, async (request, re
     const { body } = request;
     const userId = request.user._id;
     const newuser = await user.findById(userId);
-    newuser.password = hashPassword(body.password);
+    if (!comparePassword(body.currentpassword, newuser.password)) throw new Error("bad credentials");
+    newuser.password = hashPassword(body.newpassword);
     const saveuser = await newuser.save();
     return response.send("password changed");
 });
