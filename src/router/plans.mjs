@@ -52,18 +52,27 @@ router.post("/api/plan", ensureAuthenticated, async (request, response) => {
 router.get("/api/plan", ensureAuthenticated, async (request, response) => {
     const userId = request.user._id;
     const plans = await plan.find({ user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
     return response.status(200).send(plans);
 });
 router.get("/api/plan/:id", ensureAuthenticated, async (request, response) => {
     const { id } = request.params;
     const userId = request.user._id;
     const plans = await plan.findOne({ _id: id, user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
     return response.status(200).send(plans);
 });
 router.delete("/api/plan/:id", ensureAuthenticated, async (request, response) => {
     const { id } = request.params;
     const userId = request.user._id;
     const plans = await plan.findOneAndDelete({ _id: id, user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
     return response.status(200).send(plans);
 });
 // rename plan
@@ -72,6 +81,9 @@ router.patch("/api/plan/:id/rename", ensureAuthenticated, async (request, respon
     const userId = request.user._id;
     const { goal } = request.body;
     const plans = await plan.findOne({ _id: id, user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
     plans.goal = goal;
     await plans.save();
     return response.status(200).send(plans);
@@ -109,11 +121,14 @@ router.patch("/api/plan/:id/taskdone/:taskid/", ensureAuthenticated, async (requ
     const { id, taskid } = request.params;
     const userId = request.user._id;
     const plans = await plan.findOne({ _id: id, user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
     const newuser = await user.findOne({ _id: userId })
     plans.tasks.id(taskid).status = true;
     await plans.save();
     await newuser.save();
-    return response.status(200).send(plans);
+    return response.status(200).send("itsdone");
 });
 // task undone
 router.patch("/api/plan/:id/taskundone/:taskid/", ensureAuthenticated, async (request, response) => {
@@ -123,14 +138,18 @@ router.patch("/api/plan/:id/taskundone/:taskid/", ensureAuthenticated, async (re
     const plans = await plan.findOne({ _id: id, user: userId });
     plans.tasks.id(taskid).status = false;
     await plans.save();
-    return response.status(200).send(plans);
+    return response.status(200).send("itsundone");
 });
 //delete task
 router.delete("/api/plan/:id/taskdelete/:taskid/", ensureAuthenticated, async (request, response) => {
     const { id, taskid } = request.params;
     const userId = request.user._id;
     const { status } = request.body;
-    const plans = await plan.findOneAndDelete({ _id: id, user: userId });
+    const plans = await plan.findOne({ _id: id, user: userId });
+    if (!plans) {
+        return response.status(404).send("No plans found");
+    }
+    plans.tasks.id(taskid).remove();
     const newuser = await user.findOne({ _id: userId })
     newuser.Failure += 1;
     await newuser.save();
