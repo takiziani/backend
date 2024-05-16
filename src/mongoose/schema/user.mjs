@@ -31,7 +31,7 @@ const userschema = new mongoose.Schema({
         required: false,
         type: mongoose.Schema.Types.String,
     },
-    employefullname: {
+    fullname: {
         required: false,
         type: mongoose.Schema.Types.String,
     },
@@ -68,23 +68,23 @@ const userschema = new mongoose.Schema({
         required: false,
         type: mongoose.Schema.Types.String,
     },
-    DateofBirth: {
+    dateofbirth: {
         required: false,
         type: mongoose.Schema.Types.Date
     },
-    Education: {
+    education: {
         required: false,
         type: mongoose.Schema.Types.String
     },
-    WorkHistory: {
-        required: false,
-        type: [mongoose.Schema.Types.String]
-    },
-    Organization: {
+    workhistory: {
         required: false,
         type: mongoose.Schema.Types.String
     },
-    Languages: {
+    organization: {
+        required: false,
+        type: mongoose.Schema.Types.String
+    },
+    languages: {
         required: false,
         type: [mongoose.Schema.Types.String]
     },
