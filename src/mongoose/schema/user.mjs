@@ -138,7 +138,7 @@ async function calculatetotalprogress(plans) {
             console.log(`Plan with id ${plans[i]} not found`);
         }
     }
-    return Math.round((progress / plans.length) * 100);
+    return Math.round((progress / plans.length));
 }
 async function calculateUserRank(userId) {
     // Retrieve all users with company set to false and sort them by points in descending order
