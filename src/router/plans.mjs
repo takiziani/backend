@@ -149,7 +149,8 @@ router.delete("/api/plan/:id/taskdelete/:taskid/", ensureAuthenticated, async (r
     if (!plans) {
         return response.status(404).send("No plans found");
     }
-    plans.tasks.id(taskid).remove();
+    plans.tasks.pull({ _id: taskid });
+    await plans.save();
     const newuser = await user.findOne({ _id: userId })
     newuser.Failure += 1;
     await newuser.save();

@@ -98,7 +98,7 @@ const userschema = new mongoose.Schema({
         type: mongoose.Schema.Types.Number,
         default: 0,
     },
-    Speciality: {
+    speciality: {
         required: false,
         type: mongoose.Schema.Types.String
     },
