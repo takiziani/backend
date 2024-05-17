@@ -100,10 +100,10 @@ router.patch("/api/user/itisemploye", ensureAuthenticated, async (request, respo
 router.get("/api/usersRank", ensureAuthenticated, async (request, response) => {
     if (request.user.company) {
         console.log("company");
-        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("username image rank speciality points phonenumber email").exec();
+        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("username image rank speciality points phonenumber email progresse").exec();
         return response.send({ users });
     } else {
-        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("username image rank speciality points").exec();
+        const users = await user.find({ company: { $ne: true } }).sort({ points: -1 }).select("username image rank speciality points progresse").exec();
         return response.send({ users });
     }
 });
