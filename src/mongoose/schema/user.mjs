@@ -47,7 +47,6 @@ const userschema = new mongoose.Schema({
     rank: {
         required: false,
         type: mongoose.Schema.Types.Number,
-        default: 0,
     },
     surveys: {
         required: false,
@@ -140,15 +139,20 @@ async function calculatetotalprogress(plans) {
     }
     return Math.round((progress / plans.length));
 }
-async function calculateUserRank(userId) {
+async function calrank(userId) {
     // Retrieve all users with company set to false and sort them by points in descending order
-    const users = await user.find({ company: false }).sort({ points: -1 }).exec();
-
-    // Find the index of the user in the sorted list
-    const userIndex = users.findIndex(u => u._id.toString() === userId);
-
+    const users = await user.find({ company: false }).sort({ points: -1 }).select("points username").exec();
+    let userIndex;
+    for (let i = 0; i < users.length; i++) {
+        if (users[i]._id.toString() === userId.toString()) {
+            userIndex = i;
+            break;
+        }
+    }
+    userIndex = userIndex + 1;
+    console.log("index", userIndex);
     // Return the user's rank (index in the sorted list + 1)
-    return userIndex + 1;
+    return userIndex;
 }
 async function calculatesec(plans) {
     let sec = 0;
@@ -206,7 +210,8 @@ userschema.pre("save", async function (next) {
     next();
 });
 userschema.pre("save", async function (next) {
-    this.rank = await calculateUserRank(this._id);
+    console.log("this._id", this._id);
+    this.rank = await calrank(this._id);
     next();
 });
 userschema.pre("save", async function (next) {
