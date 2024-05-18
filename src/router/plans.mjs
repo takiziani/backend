@@ -164,7 +164,7 @@ router.patch("/api/plan/:id/taskedit/:taskid/", ensureAuthenticated, async (requ
     const plans = await plan.findOne({ _id: id, user: userId });
     plans.tasks.id(taskid).task = task;
     await plans.save();
-    return response.status(200).send(plans);
+    return response.status(200).send(plans.tasks.id(taskid));
 });
 // add task
 router.patch("/api/plan/:id/taskadd/", ensureAuthenticated, async (request, response) => {

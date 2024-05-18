@@ -107,6 +107,11 @@ router.get("/api/usersRank", ensureAuthenticated, async (request, response) => {
         return response.send({ users });
     }
 });
+router.get("/api/user", ensureAuthenticated, async (request, response) => {
+    const userId = request.user._id;
+    const newuser = await user.findById(userId).select("-password").exec();
+    return response.send(newuser);
+});
 router.get("/api/user/:id", ensureAuthenticated, async (request, response) => {
     const userId = request.params.id;
     const newuser = await user.findById(userId).select("-password").exec();
