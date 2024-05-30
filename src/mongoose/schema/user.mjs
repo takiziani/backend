@@ -163,7 +163,7 @@ async function calculatesec(plans) {
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
         if (newplan.tasks.length > 0) {
-            sec = (newplan.progress * newplan.tasks.length) / 100;
+            sec = Math.round((newplan.progress * newplan.tasks.length) / 100);
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
