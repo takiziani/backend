@@ -111,6 +111,10 @@ const userschema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "user",
     },
+    bio: {
+        required: false,
+        type: mongoose.Schema.Types.String
+    },
 }
 );
 async function calculatetotalpoints(plans) {
@@ -159,7 +163,7 @@ async function calculatesec(plans) {
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
         if (newplan) {
-            sec = newplan.progress * newplan.tasks.length;
+            sec = (newplan.progress * newplan.tasks.length) / 100;
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
