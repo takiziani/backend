@@ -121,7 +121,7 @@ async function calculatetotalpoints(plans) {
     let points = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan) {
+        if (newplan.tasks.length > 0) {
             console.log("here" + newplan.progress);
             points += newplan.pointsearned;
         } else {
@@ -134,7 +134,7 @@ async function calculatetotalprogress(plans) {
     let progress = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan) {
+        if (newplan.tasks.length > 0) {
             console.log("here" + newplan.progress);
             progress += newplan.progress;
         } else {
@@ -162,7 +162,7 @@ async function calculatesec(plans) {
     let sec = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan) {
+        if (newplan.tasks.length > 0) {
             sec = (newplan.progress * newplan.tasks.length) / 100;
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
@@ -177,7 +177,7 @@ async function calculatefailure(plans) {
     let today = new Date();
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan) {
+        if (newplan.tasks.length > 0) {
             for (let j = 0; j < newplan.tasks.length; j++) {
                 if (new Date(newplan.tasks[j].date) < today && newplan.tasks[j].status == false) {
                     failure += 1;
@@ -195,7 +195,7 @@ async function calculate(plans) {
     let totaltasks = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
-        if (newplan) {
+        if (newplan.tasks.length > 0) {
             totaltasks += newplan.tasks.length;
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
