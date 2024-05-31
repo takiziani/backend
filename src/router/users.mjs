@@ -185,7 +185,65 @@ router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, respon
     const totaltasks = monthtasks.length;
     const progress = Math.round((sec / totaltasks) * 100);
     const failurerate = Math.round((failure / totaltasks) * 100);
-    return response.status(200).send({ monthtasks, progress, failurerate });
+    return response.status(200).send({ monthtasks, progress, failurerate, totaltasks });
+});
+// get total tasks
+router.get("/api/plan/totaltasks", ensureAuthenticated, async (request, response) => {
+    const userid = request.user._id
+    const newuser = await user.findById(userid);
+    let totaltasks = 0;
+    for (let i = 0; i < newuser.plans.length; i++) {
+        const newplan = await plan.findById(newuser.plans[i]);
+        if (newplan.tasks.length > 0) {
+            totaltasks = totaltasks + newplan.tasks.length;
+        }
+    }
+    return response.send({ totaltasks });
+});
+// get today tasks
+router.get("/api/plan/todaytasks", ensureAuthenticated, async (request, response) => {
+    const userid = request.user._id
+    const newuser = await user.findById(userid);
+    let todaytasks = [];
+    for (let i = 0; i < newuser.plans.length; i++) {
+        const newplan = await plan.findById(newuser.plans[i]);
+        if (newplan.tasks.length > 0) {
+            const tasks = newplan.tasks.filter((task) => new Date(task.date).toDateString() === new Date().toDateString());
+            for (let c = 0; c < tasks.length; c++) {
+                todaytasks.push(tasks[c]);
+            }
+        }
+    }
+    return response.send(todaytasks);
+});
+// get week tasks
+router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response) => {
+    const userid = request.user._id
+    const newuser = await user.findById(userid);
+    let weektasks = [];
+    let sec = 0;
+    let failure = 0;
+    for (let i = 0; i < newuser.plans.length; i++) {
+        const newplan = await plan.findById(newuser.plans[i]);
+        if (newplan.tasks.length > 0) {
+            const tasks = newplan.tasks.filter((task) => new Date(task.date) >= new Date(new Date().setDate(new Date().getDate() - 7)) && new Date(task.date) <= new Date());
+            for (let c = 0; c < tasks.length; c++) {
+                weektasks.push(tasks[c]);
+            }
+        }
+    }
+    for (let j = 0; j < weektasks.length; j++) {
+        if (weektasks[j].status === true) {
+            sec = sec + 1;
+        }
+        else if (new Date(weektasks[j].date) < new Date() && weektasks[j].status === false) {
+            failure = failure + 1;
+        }
+    }
+    const totaltasks = weektasks.length;
+    const progress = Math.round((sec / totaltasks) * 100);
+    const failurerate = Math.round((failure / totaltasks) * 100);
+    return response.send({ weektasks, progress, failurerate, totaltasks });
 });
 
 export default router
