@@ -248,9 +248,37 @@ router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response)
         }
     }
     const totaltasks = weektasks.length;
-    // const progress = Math.round((sec / totaltasks) * 100);
-    // const failurerate = Math.round((failure / totaltasks) * 100);
     return response.send({ weektasks, secess, failure, totaltasks });
 });
-
+// totaltasks and secess of each month
+router.get("/api/plan/year", ensureAuthenticated, async (request, response) => {
+    const userid = request.user._id
+    const newuser = await user.findById(userid);
+    let month1 = 0;
+    let monthtasks = [];
+    let yearstat = [];
+    let secess = 0;
+    for (let m = 1; m <= 12; m++) {
+        for (let i = 0; i < newuser.plans.length; i++) {
+            const newplan = await plan.findById(newuser.plans[i]);
+            if (newplan.tasks.length > 0) {
+                let tasks = newplan.tasks.filter((task) => new Date(task.date).getMonth() == m - 1);
+                for (let c = 0; c < tasks.length; c++) {
+                    monthtasks.push(tasks[c]);
+                }
+            }
+            else {
+                console.log(`Plan with id ${newuser.plans[i]} not found`);
+            }
+        }
+        for (let j = 0; j < monthtasks.length; j++) {
+            if (monthtasks[j].status === true) {
+                secess = secess + 1;
+            }
+        }
+        yearstat.push({ month: m, totaltasks: monthtasks.length, secess: secess });
+        monthtasks = [];
+    }
+    return response.send(yearstat);
+});
 export default router
