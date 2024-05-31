@@ -116,7 +116,14 @@ router.get("/api/user", ensureAuthenticated, async (request, response) => {
 router.get("/api/user/:id", ensureAuthenticated, async (request, response) => {
     const userId = request.params.id;
     const newuser = await user.findById(userId).select("-password").exec();
-    return response.send(newuser);
+    let totaltasks = 0;
+    for (let i = 0; i < newuser.plans.length; i++) {
+        const newplan = await plan.findById(newuser.plans[i]);
+        if (newplan.tasks.length > 0) {
+            totaltasks = totaltasks + newplan.tasks.length;
+        }
+    }
+    return response.send({ newuser, totaltasks });
 });
 router.patch("/api/user/changepassword", ensureAuthenticated, async (request, response) => {
     const { body } = request;
