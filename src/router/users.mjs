@@ -116,14 +116,14 @@ router.get("/api/user", ensureAuthenticated, async (request, response) => {
 router.get("/api/user/:id", ensureAuthenticated, async (request, response) => {
     const userId = request.params.id;
     const newuser = await user.findById(userId).select("-password").exec();
-    let totaltasks = 0;
-    for (let i = 0; i < newuser.plans.length; i++) {
-        const newplan = await plan.findById(newuser.plans[i]);
-        if (newplan.tasks.length > 0) {
-            totaltasks = totaltasks + newplan.tasks.length;
-        }
-    }
-    return response.send({ newuser, totaltasks });
+    // let totaltasks = 0;
+    // for (let i = 0; i < newuser.plans.length; i++) {
+    //     const newplan = await plan.findById(newuser.plans[i]);
+    //     if (newplan.tasks.length > 0) {
+    //         totaltasks = totaltasks + newplan.tasks.length;
+    //     }
+    // }
+    return response.send(newuser);
 });
 router.patch("/api/user/changepassword", ensureAuthenticated, async (request, response) => {
     const { body } = request;
@@ -258,11 +258,12 @@ router.get("/api/plan/year", ensureAuthenticated, async (request, response) => {
     let monthtasks = [];
     let yearstat = [];
     let secess = 0;
+    let tasks;
     for (let m = 1; m <= 12; m++) {
         for (let i = 0; i < newuser.plans.length; i++) {
             const newplan = await plan.findById(newuser.plans[i]);
             if (newplan.tasks.length > 0) {
-                let tasks = newplan.tasks.filter((task) => new Date(task.date).getMonth() == m - 1);
+                tasks = newplan.tasks.filter((task) => new Date(task.date).getMonth() == m - 1);
                 for (let c = 0; c < tasks.length; c++) {
                     monthtasks.push(tasks[c]);
                 }
