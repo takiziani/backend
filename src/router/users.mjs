@@ -1,5 +1,6 @@
 import { Router, request, response, text } from "express";
 import { user } from "../mongoose/schema/user.mjs";
+import { plan } from "../mongoose/schema/plan.mjs";
 import passport from "../strategies/localstrat.mjs";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -152,4 +153,39 @@ router.get("/api/usercompany/favorites", ensureAuthenticated, ensureCompany, asy
     const favs = await user.find({ _id: { $in: newuser.companyfav } }).select("-password").exec();
     return response.send(favs);
 });
+// get tasks by month
+router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, response) => {
+    const { month } = request.params;
+    const userId = request.user._id;
+    let monthtasks = [];
+    let sec = 0;
+    let failure = 0;
+    let tasks;
+    const newuser = await user.findById(userId);
+    for (let i = 0; i < newuser.plans.length; i++) {
+        const newplan = await plan.findById(newuser.plans[i]);
+        if (newplan.tasks.length > 0) {
+            tasks = newplan.tasks.filter((task) => new Date(task.date).getMonth() == month - 1);
+        }
+        else {
+            console.log(`Plan with id ${newuser.plans[i]} not found`);
+        }
+        for (let c = 0; c < tasks.length; c++) {
+            monthtasks.push(tasks[c]);
+        }
+    }
+    for (let j = 0; j < monthtasks.length; j++) {
+        if (monthtasks[j].status === true) {
+            sec = sec + 1;
+        }
+        else if (new Date(monthtasks[j].date) < new Date() && monthtasks[j].status === false) {
+            failure = failure + 1;
+        }
+    }
+    const totaltasks = monthtasks.length;
+    const progress = Math.round((sec / totaltasks) * 100);
+    const failurerate = Math.round((failure / totaltasks) * 100);
+    return response.status(200).send({ monthtasks, progress, failurerate });
+});
+
 export default router

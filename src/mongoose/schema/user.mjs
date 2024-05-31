@@ -160,23 +160,30 @@ async function calrank(userId) {
 }
 async function calculatesec(plans) {
     let sec = 0;
+    let totaltasks = 0;
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
+        totaltasks += newplan.tasks.length;
         if (newplan.tasks.length > 0) {
-            sec = Math.round((newplan.progress * newplan.tasks.length) / 100);
+            for (let j = 0; j < newplan.tasks.length; j++) {
+                if (newplan.tasks[j].status == true) {
+                    sec += 1;
+                }
+            }
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
-        // mongoose.connection.close();
     }
 
-    return sec;
+    return Math.round((sec / totaltasks) * 100);
 }
 async function calculatefailure(plans) {
     let failure = 0;
+    let totaltasks = 0;
     let today = new Date();
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
+        totaltasks += newplan.tasks.length;
         if (newplan.tasks.length > 0) {
             for (let j = 0; j < newplan.tasks.length; j++) {
                 if (new Date(newplan.tasks[j].date) < today && newplan.tasks[j].status == false) {
@@ -186,10 +193,9 @@ async function calculatefailure(plans) {
         } else {
             console.log(`Plan with id ${plans[i]} not found`);
         }
-        // mongoose.connection.close();
     }
 
-    return failure;
+    return Math.round((failure / totaltasks) * 100);
 }
 async function calculate(plans) {
     let totaltasks = 0;

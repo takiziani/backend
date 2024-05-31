@@ -60,7 +60,6 @@ function calculateprogress(tasks) {
         if (tasks[i].status === true) {
             progress += 1;
         }
-        // mongoose.connection.close();
     }
 
     return Math.round((progress / tasks.length) * 100);
