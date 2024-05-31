@@ -124,7 +124,8 @@ router.get("/api/user/:id", ensureAuthenticated, async (request, response) => {
             totaltasks = totaltasks + newplan.tasks.length;
         }
     }
-    return response.send({ newuser, totaltasks });
+    newuser.totaltasks = totaltasks;
+    return response.send(newuser);
 });
 router.patch("/api/user/changepassword", ensureAuthenticated, async (request, response) => {
     const { body } = request;

@@ -70,6 +70,9 @@ router.delete("/api/plan/:id", ensureAuthenticated, async (request, response) =>
     const { id } = request.params;
     const userId = request.user._id;
     const plans = await plan.findOneAndDelete({ _id: id, user: userId });
+    const newuser = await user.findOne({ _id: userId });
+    newuser.plans.pull({ _id: id });
+    await newuser.save();
     if (!plans) {
         return response.status(404).send("No plans found");
     }
