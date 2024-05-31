@@ -175,7 +175,7 @@ async function calculatesec(plans) {
         }
     }
 
-    return Math.round((sec / totaltasks) * 100);
+    return sec;
 }
 async function calculatefailure(plans) {
     let failure = 0;
@@ -195,7 +195,7 @@ async function calculatefailure(plans) {
         }
     }
 
-    return Math.round((failure / totaltasks) * 100);
+    return failure;
 }
 async function calculate(plans) {
     let totaltasks = 0;

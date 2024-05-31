@@ -158,7 +158,7 @@ router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, respon
     const { month } = request.params;
     const userId = request.user._id;
     let monthtasks = [];
-    let sec = 0;
+    let secess = 0;
     let failure = 0;
     let tasks;
     const newuser = await user.findById(userId);
@@ -176,16 +176,16 @@ router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, respon
     }
     for (let j = 0; j < monthtasks.length; j++) {
         if (monthtasks[j].status === true) {
-            sec = sec + 1;
+            secess = secess + 1;
         }
         else if (new Date(monthtasks[j].date) < new Date() && monthtasks[j].status === false) {
             failure = failure + 1;
         }
     }
     const totaltasks = monthtasks.length;
-    const progress = Math.round((sec / totaltasks) * 100);
-    const failurerate = Math.round((failure / totaltasks) * 100);
-    return response.status(200).send({ monthtasks, progress, failurerate, totaltasks });
+    // const progress = Math.round((sec / totaltasks) * 100);
+    // const failurerate = Math.round((failure / totaltasks) * 100);
+    return response.status(200).send({ monthtasks, secess, failure, totaltasks });
 });
 // get total tasks
 router.get("/api/plan/totaltasks", ensureAuthenticated, async (request, response) => {
@@ -221,7 +221,7 @@ router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response)
     const userid = request.user._id
     const newuser = await user.findById(userid);
     let weektasks = [];
-    let sec = 0;
+    let secess = 0;
     let failure = 0;
     for (let i = 0; i < newuser.plans.length; i++) {
         const newplan = await plan.findById(newuser.plans[i]);
@@ -234,16 +234,16 @@ router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response)
     }
     for (let j = 0; j < weektasks.length; j++) {
         if (weektasks[j].status === true) {
-            sec = sec + 1;
+            secess = secess + 1;
         }
         else if (new Date(weektasks[j].date) < new Date() && weektasks[j].status === false) {
             failure = failure + 1;
         }
     }
     const totaltasks = weektasks.length;
-    const progress = Math.round((sec / totaltasks) * 100);
-    const failurerate = Math.round((failure / totaltasks) * 100);
-    return response.send({ weektasks, progress, failurerate, totaltasks });
+    // const progress = Math.round((sec / totaltasks) * 100);
+    // const failurerate = Math.round((failure / totaltasks) * 100);
+    return response.send({ weektasks, secess, failure, totaltasks });
 });
 
 export default router
