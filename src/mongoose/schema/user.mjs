@@ -47,6 +47,7 @@ const userschema = new mongoose.Schema({
     rank: {
         required: false,
         type: mongoose.Schema.Types.Number,
+        default: 0,
     },
     surveys: {
         required: false,
