@@ -182,6 +182,7 @@ async function calculatefailure(plans) {
     let failure = 0;
     let totaltasks = 0;
     let today = new Date();
+    today.setHours(0, 0, 0, 0);
     for (let i = 0; i < plans.length; i++) {
         const newplan = await plan.findById(plans[i]);
         totaltasks += newplan.tasks.length;

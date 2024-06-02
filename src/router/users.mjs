@@ -170,6 +170,8 @@ router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, respon
     let secess = 0;
     let failure = 0;
     let tasks;
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
     const newuser = await user.findById(userId);
     for (let i = 0; i < newuser.plans.length; i++) {
         const newplan = await plan.findById(newuser.plans[i]);
@@ -187,7 +189,7 @@ router.get("/api/plan/tasks/:month", ensureAuthenticated, async (request, respon
         if (monthtasks[j].status === true) {
             secess = secess + 1;
         }
-        else if (new Date(monthtasks[j].date) < new Date() && monthtasks[j].status === false) {
+        else if (new Date(monthtasks[j].date) < today && monthtasks[j].status === false) {
             failure = failure + 1;
         }
     }
@@ -232,6 +234,8 @@ router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response)
     let weektasks = [];
     let secess = 0;
     let failure = 0;
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
     for (let i = 0; i < newuser.plans.length; i++) {
         const newplan = await plan.findById(newuser.plans[i]);
         if (newplan.tasks.length > 0) {
@@ -245,7 +249,7 @@ router.get("/api/plan/weektasks", ensureAuthenticated, async (request, response)
         if (weektasks[j].status === true) {
             secess = secess + 1;
         }
-        else if (new Date(weektasks[j].date) < new Date() && weektasks[j].status === false) {
+        else if (new Date(weektasks[j].date) < today && weektasks[j].status === false) {
             failure = failure + 1;
         }
     }
